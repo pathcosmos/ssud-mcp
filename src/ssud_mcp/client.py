@@ -260,6 +260,19 @@ class AgentClient:
     def workspace(self):
         return self.workspace_request("GET", "/api/session")
 
+    def with_download_url(self, result):
+        value = result.get("download_url", "")
+        if isinstance(value, str) and re.fullmatch(r"/d/[A-Za-z0-9_-]{12}", value):
+            return {**result, "download_url": self.url + value}
+        return result
+
+    def create_download_link(self, path):
+        return self.with_download_url(
+            self.workspace_request(
+                "POST", "/api/download-links", json={"path": self.remote_path(path)}
+            )
+        )
+
     def usage(self):
         with self.lock:
             return {
@@ -389,7 +402,9 @@ class AgentClient:
                 self.paused_uploads.pop(upload_id, None)
                 raise
             self.paused_uploads.pop(upload_id, None)
-            return {**result, "name": item["name"], "bytes": size, "directory": item["directory"]}
+            return self.with_download_url(
+                {**result, "name": item["name"], "bytes": size, "directory": item["directory"]}
+            )
 
     def resume_upload(self, upload_id, max_chunks=None):
         with self.lock:

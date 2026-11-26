@@ -9,7 +9,7 @@ web account that has access to the files you want to use.
 
 Install [uv](https://docs.astral.sh/uv/) and create a local transfer directory on the machine
 that runs your agent. Replace the example URL and paths in the configuration below. The published
-wheel is pinned to version 0.1.0. To update, replace the URL with the wheel URL for a newer
+wheel is pinned to version 0.2.0. To update, replace the URL with the wheel URL for a newer
 [release](https://github.com/pathcosmos/ssud-mcp/releases) and restart your MCP host.
 
 ### Codex
@@ -19,7 +19,7 @@ Add this entry to the host's Codex MCP configuration:
 ```toml
 [mcp_servers.ssud]
 command = "uvx"
-args = ["--from", "https://github.com/pathcosmos/ssud-mcp/releases/download/v0.1.0/ssud_mcp-0.1.0-py3-none-any.whl", "ssud-mcp"]
+args = ["--from", "https://github.com/pathcosmos/ssud-mcp/releases/download/v0.2.0/ssud_mcp-0.2.0-py3-none-any.whl", "ssud-mcp"]
 tool_timeout_sec = 3600
 
 [mcp_servers.ssud.env]
@@ -38,7 +38,7 @@ Merge the entry into the project's `.mcp.json`:
     "ssud": {
       "type": "stdio",
       "command": "uvx",
-      "args": ["--from", "https://github.com/pathcosmos/ssud-mcp/releases/download/v0.1.0/ssud_mcp-0.1.0-py3-none-any.whl", "ssud-mcp"],
+      "args": ["--from", "https://github.com/pathcosmos/ssud-mcp/releases/download/v0.2.0/ssud_mcp-0.2.0-py3-none-any.whl", "ssud-mcp"],
       "env": {
         "SSUD_AGENT_URL": "https://files.example.org",
         "SSUD_AGENT_LOCAL_ROOT": "/absolute/path/to/ssud-transfers",
@@ -66,6 +66,8 @@ must also allow HTTP pairing, and HTTP does not encrypt traffic.
 - Browse or search from the approved Home folder.
 - Upload from, or download to, the configured local transfer directory. Transfers do not
   overwrite existing files.
+- Completed uploads can include a 24-hour browser download link. Use `create_download_link`
+  for an existing file. The recipient signs in to SSUD and needs access to the file.
 - Create or rename folders and files, and delete one file or empty folder after user
   confirmation. Availability depends on the installed server version and your permissions.
 - Inspect workspace and index status, adjust supported preferences, or disconnect.

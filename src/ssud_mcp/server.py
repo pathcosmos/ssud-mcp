@@ -171,6 +171,11 @@ def create_server(client):
         """Stream a Home-relative file to a new file inside the local transfer root."""
         return invoke(client.download, path, local_path)
 
+    @server.tool(annotations=write)
+    def create_download_link(path: str) -> dict:
+        """Create an expiring browser download link for an existing file. SSUD sign-in is required."""
+        return invoke(client.create_download_link, path)
+
     if client.pairing:
 
         @server.tool(annotations=write)

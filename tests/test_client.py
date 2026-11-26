@@ -61,3 +61,25 @@ def test_remote_http_requires_opt_in(tmp_path, monkeypatch):
     monkeypatch.delenv("SSUD_AGENT_ALLOW_HTTP", raising=False)
     with pytest.raises(AgentError, match="HTTPS"):
         AgentClient.from_environment()
+
+
+def test_download_link_result_uses_configured_server_origin(tmp_path):
+    url = "https://files.example.org"
+
+    def respond(request):
+        if request.url.path == "/api/agent/disconnect":
+            return httpx.Response(200, json={"ok": True})
+        assert request.url.path == "/api/download-links"
+        return httpx.Response(
+            200, json={"download_url": "/d/abcDEF0123_-", "download_expires": 123}
+        )
+
+    transport = httpx.Client(base_url=url, transport=httpx.MockTransport(respond))
+    client = AgentClient(url, "", "", "", "", tmp_path, pairing=True, http=transport)
+    client.expires = 10**10
+    client.http.headers["Authorization"] = "Bearer test-only"
+    assert client.create_download_link("report.txt") == {
+        "download_url": url + "/d/abcDEF0123_-",
+        "download_expires": 123,
+    }
+    client.close()
